@@ -3,7 +3,8 @@ import './App.css';
 import Slider from './widgets/Slider';
 import Button from './widgets/Button';
 import AcousticGuitarProfile from './synth/profiles/AcousticGuitarProfile'
-import SynthibleFactory from "./synth/core/SynthibleFactory";
+import SynthibleFactory from './synth/core/SynthibleFactory';
+import convert16BitDataToWav from './synth/util/ArrayToWav';
 
 class App extends Component {
   hertz = 5
@@ -14,8 +15,12 @@ class App extends Component {
       hertz={this.hertz}
       onClick={() => {
         var builder = new SynthibleFactory(new AcousticGuitarProfile())
-        builder.synthSound(this.hertz)
+        var sounds = builder.synthSound(this.hertz)
         console.log("finished creating sound at hz: " + this.hertz)
+
+        console.log("length of sounds is: " + sounds.length)
+        var wavData = convert16BitDataToWav(sounds)
+        console.log("finished conversion to wav.")
       }}
       text={"Render at " + this.hertz + "Hz"}
     />})

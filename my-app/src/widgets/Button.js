@@ -5,10 +5,7 @@ import SynthibleFactory from "../synth/core/SynthibleFactory";
 class Button extends Component {
   render() {
     return (
-      <button onClick={() => {
-        var builder = new SynthibleFactory(new AcousticGuitarProfile())
-        builder.synthSound(50)
-      }}>
+      <button onClick={this.props.onClick}>
         {this.props.text}
       </button>
     )

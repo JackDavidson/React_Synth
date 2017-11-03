@@ -113,7 +113,7 @@ class SynthibleBuilder {
     var totalLengthInSec = 0;
     for (var i = 0; i < this.lengths.length; i++)
       totalLengthInSec += this.lengths[i];
-    var totalSamples = Math.round(totalLengthInSec * this.sampleRate);
+    var totalSamples = Math.round(totalLengthInSec * SynthSettings.sampleRate);
     for (var i = 0; i < this.harmonics.length + 1; i++) {
       innerSinMultiplier[i] = new Float64Array(totalSamples + 1);
       outerSinMultiplier[i] = new Float64Array(totalSamples + 1);
@@ -125,7 +125,7 @@ class SynthibleBuilder {
       if (harmonic == 0) {
         piTimesHarmonicDivSamplerate = 1 / (this.sampleRate * 2);
       } else {
-        piTimesHarmonicDivSamplerate = this.harmonics[harmonic - 1] / (this.sampleRate * 2);
+        piTimesHarmonicDivSamplerate = this.harmonics[harmonic - 1] / (SynthSettings.sampleRate * 2);
       }
       var harmonicVol;
       if (harmonic == 0) {
@@ -135,7 +135,7 @@ class SynthibleBuilder {
       }
       var lastSampleInner = innerSinMultiplier[harmonic][totSamples] = piTimesHarmonicDivSamplerate * this.hz[0];
       for (var i = 0; i < this.lengths.length; i++) {
-        var numSamplesInRound = Math.round(this.sampleRate * this.lengths[i]); // lengths is in seconds
+        var numSamplesInRound = Math.round(SynthSettings.sampleRate * this.lengths[i]); // lengths is in seconds
         var amtVolChangePerStep = this.smoothVol ? (this.volumes[i + 1] - this.volumes[i]) / (numSamplesInRound) : 0;
         var amtHzChangePerStep = this.smoothNote ? (this.hz[i + 1] - this.hz[i]) / (numSamplesInRound) : 0;
         for (var j = 0; j < numSamplesInRound; j++) {
