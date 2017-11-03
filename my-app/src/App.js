@@ -7,11 +7,17 @@ import SynthibleFactory from './synth/core/SynthibleFactory';
 import convert16BitDataToWav from './synth/util/ArrayToWav';
 
 class App extends Component {
-  hertz = 5
+  hertz = 440
+  completedWavData = null
 
   slider = <Slider onChange={(nhz) => {
     this.hertz = nhz.target.value
-    this.setState ({button: <Button
+    this.completedWavData = null
+    this.refreshCompleteState()
+  }}/>
+
+  renderPrepButton() {
+    return <Button
       hertz={this.hertz}
       onClick={() => {
         var builder = new SynthibleFactory(new AcousticGuitarProfile())
@@ -19,28 +25,35 @@ class App extends Component {
         console.log("finished creating sound at hz: " + this.hertz)
 
         console.log("length of sounds is: " + sounds.length)
-        var wavData = convert16BitDataToWav(sounds)
-        console.log("finished conversion to wav.")
+        this.completedWavData = convert16BitDataToWav(sounds)
+        console.log("finished conversion to wav. displaying button")
+
+        this.refreshCompleteState()
       }}
       text={"Render at " + this.hertz + "Hz"}
-    />})
+    />
+  }
 
+  renderPlayButton() {
+    console.log("rendering play button: " + this.completedWavData)
+    if (!this.completedWavData)
+      return null
+    console.log("returning actual button. ")
+    return <Button text={"Play Sound"} />
+  }
 
-    console.log("hertz is " + nhz.target.value)
-  }}/>
+  refreshCompleteState() {
+    this.setState({
+      prepareButton: this.renderPrepButton(),
+      playButton: this.renderPlayButton()
+    })
+  }
 
   constructor(props) {
     super(props)
     this.state = {
-      button: <Button
-        hertz={this.hertz}
-        onClick={() => {
-          var builder = new SynthibleFactory(new AcousticGuitarProfile())
-          builder.synthSound(this.hertz)
-          console.log("finished creating sound at hz: " + this.hertz)
-        }}
-        text={"Render at " + this.hertz + "Hz"}
-      />
+      prepareButton: this.renderPrepButton(),
+      playButton: this.renderPlayButton()
     }
   }
 
@@ -69,7 +82,9 @@ class App extends Component {
             <td>
               {this.renderSlider()}
               <br/>
-              {this.state.button}
+              {this.state.prepareButton}
+              <br/><br/>
+              {this.state.playButton}
             </td>
           </tr>
         </tbody>
