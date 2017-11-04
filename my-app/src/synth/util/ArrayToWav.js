@@ -1,4 +1,6 @@
 
+import SynthSettings from "../core/SynthSettings";
+
 var convert16BitDataToWav = function(dataArray) {
   return new WavData(dataArray)
 }
@@ -16,7 +18,7 @@ class WavData {
       subChunk1Size: 16,                    // 16   4    16 for PCM
       audioFormat:   1,                     // 20   2    PCM = 1
       numChannels:   1,                     // 22   2    Mono = 1, Stereo = 2...
-      sampleRate:    8000,                  // 24   4    8000, 44100...
+      sampleRate:    SynthSettings.sampleRate,                  // 24   4    8000, 44100...
       byteRate:      0,                     // 28   4    SampleRate*NumChannels*BitsPerSample/8
       blockAlign:    0,                     // 32   2    NumChannels*BitsPerSample/8
       bitsPerSample: 16,                     // 34   2    8 bits = 8, 16 bits = 16
@@ -24,7 +26,12 @@ class WavData {
       subChunk2Size: 0                      // 40   4    data size = NumSamples*NumChannels*BitsPerSample/8
     }
 
-    if(data instanceof Array) this.Make(data);
+    if(data instanceof Array) {
+      console.log("data is an array.")
+    } else {
+      console.log("data is not an array.")
+    }
+    this.Make(data);
   }
 
   u32ToArray(i) {
@@ -71,6 +78,7 @@ class WavData {
     this.wav.set(this.u32ToArray(this.header.subChunk2Size), 40);
     this.wav.set(this.split16bitArray(this.data), 44);
     var urlCreator = window.URL || window.webkitURL;
+    console.log("setting data uri.")
     this.dataURI   = urlCreator.createObjectURL(new Blob([this.wav], {type: "audio/wav"}));
   }
 }

@@ -5,14 +5,17 @@ import Button from './widgets/Button';
 import AcousticGuitarProfile from './synth/profiles/AcousticGuitarProfile'
 import SynthibleFactory from './synth/core/SynthibleFactory';
 import convert16BitDataToWav from './synth/util/ArrayToWav';
+import Sound from 'react-sound';
 
 class App extends Component {
   hertz = 440
   completedWavData = null
 
   slider = <Slider onChange={(nhz) => {
-    this.hertz = nhz.target.value
+    this.hertz = parseInt(nhz.target.value)
+    //this.hertz =
     this.completedWavData = null
+    this.playingSound = false
     this.refreshCompleteState()
   }}/>
 
@@ -24,7 +27,7 @@ class App extends Component {
         var sounds = builder.synthSound(this.hertz)
         console.log("finished creating sound at hz: " + this.hertz)
 
-        console.log("length of sounds is: " + sounds.length)
+        console.log("length of sounds is: " + sounds.length + " type of sounds is: " + typeof sounds)
         this.completedWavData = convert16BitDataToWav(sounds)
         console.log("finished conversion to wav. displaying button")
 
@@ -34,18 +37,50 @@ class App extends Component {
     />
   }
 
+  playingSound = false
+  renderSound() {
+    console.log("playing sound is: " + this.playingSound)
+    if (!this.playingSound) {
+      console.log("returning null sound.")
+      return null
+    }
+    console.log("returning the playing sound: " + this.completedWavData.dataURI)
+    console.log("length of the sound is: " + this.completedWavData.wav.length)
+    return (
+      <Sound
+        url={this.completedWavData.dataURI}
+        playStatus={Sound.status.PLAYING}
+        playFromPosition={0 /* in milliseconds */}
+        autoLoad={true}
+
+      />
+    );
+  }
+
   renderPlayButton() {
+    // var sound = <Sound url={this.completedWavData.dataURI} playStatus={Sound.status.PLAYING}/>
+
     console.log("rendering play button: " + this.completedWavData)
     if (!this.completedWavData)
       return null
     console.log("returning actual button. ")
-    return <Button text={"Play Sound"} />
+    //var audioSRC = <source type='audio/wav;'/>
+
+    //var audio    = <audio src={}>{audioSRC}</audio>
+    //audio.append(audioSRC);
+    //audioSRC.src = ;
+    //audio.load();
+    return <Button text={"Play Sound"} onClick={() => {
+      this.playingSound = true
+      this.refreshCompleteState()
+    }}/>
   }
 
   refreshCompleteState() {
     this.setState({
       prepareButton: this.renderPrepButton(),
-      playButton: this.renderPlayButton()
+      playButton: this.renderPlayButton(),
+      sound: this.renderSound()
     })
   }
 
@@ -53,7 +88,8 @@ class App extends Component {
     super(props)
     this.state = {
       prepareButton: this.renderPrepButton(),
-      playButton: this.renderPlayButton()
+      playButton: this.renderPlayButton(),
+      sound: this.renderSound()
     }
   }
 
@@ -85,6 +121,7 @@ class App extends Component {
               {this.state.prepareButton}
               <br/><br/>
               {this.state.playButton}
+              {this.state.sound}
             </td>
           </tr>
         </tbody>

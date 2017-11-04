@@ -154,6 +154,7 @@ class SynthibleBuilder {
         waveForm[i] += outerSinMultiplier[j][i] * this.funcTable[(innerSinMultiplier[j][i] - (innerSinMultiplier[j][i] << 0)) * 8192 << 0];
       }
     }
+    console.log("type of result wave form is:  " + typeof waveForm)
     return waveForm;
     // END level 5 synth
   }
